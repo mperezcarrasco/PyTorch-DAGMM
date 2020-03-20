@@ -13,11 +13,11 @@ class KDDCupData:
 
         labels = data["kdd"][:,-1]
         features = data["kdd"][:,:-1]
-        #In this case, "atack" has been treated as normal data as mentioned in the paper
+        #In this case, "atack" has been treated as normal data as is mentioned in the paper
         normal_data = features[labels==0] 
         normal_labels = labels[labels==0]
 
-        n_train = int(normal_data.shape[0]*0.8)
+        n_train = int(normal_data.shape[0]*0.5)
         normal_data_test = normal_data[n_train:]
         normal_labels_test = normal_labels[n_train:]
 

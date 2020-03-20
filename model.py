@@ -33,7 +33,7 @@ class DAGMM(nn.Module):
         h = torch.tanh(self.fc5(x))
         h = torch.tanh(self.fc6(h))
         h = torch.tanh(self.fc7(h))
-        return torch.sigmoid(self.fc8(h))
+        return self.fc8(h)
     
     def estimate(self, z):
         h = F.dropout(torch.tanh(self.fc9(z)), 0.5)
