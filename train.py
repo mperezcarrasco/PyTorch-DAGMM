@@ -7,14 +7,7 @@ from barbar import Bar
 
 from model import DAGMM
 from forward_step import ComputeLoss
-
-
-def weights_init_normal(m):
-    classname = m.__class__.__name__
-    if classname.find("Conv") != -1 and classname != 'Conv':
-        torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
-    elif classname.find("Linear") != -1:
-        torch.nn.init.normal_(m.weight.data, 0.0, 0.02)
+from utils.utils import weights_init_normal
 
 class TrainerDAGMM:
     """Trainer class for DAGMM."""
@@ -27,7 +20,7 @@ class TrainerDAGMM:
     def train(self):
         """Training the DAGMM model"""
         self.model = DAGMM(self.args.n_gmm, self.args.latent_dim).to(self.device)
-        
+        self.model.apply(weights_init_normal)
         optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr)
 
         self.compute = ComputeLoss(self.model, self.args.lambda_energy, self.args.lambda_cov, 
