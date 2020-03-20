@@ -1,2 +1,2 @@
 # PyTorch-DAGMM
-This is my Minimal PyTorch implementation for [Deep Autoencoding Gaussian Mixture Model for Unsupervised Anomaly Detection](https://openreview.net/pdf?id=BJJLHbb0) (ICLR 2018)
+This is my Minimal PyTorch implementation for [Deep Autoencoding Gaussian Mixture Model for Unsupervised Anomaly Detection](https://openreview.net/pdf?id=BJJLHbb0) (DAGMM, ICLR 2018)
