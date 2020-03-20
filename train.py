@@ -29,8 +29,6 @@ class TrainerDAGMM:
         self.model = DAGMM(self.args.n_gmm, self.args.latent_dim).to(self.device)
         
         optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr)
-        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, 
-                    milestones=self.args.lr_milestones, gamma=0.1)
 
         self.compute = ComputeLoss(self.model, self.args.lambda_energy, self.args.lambda_cov, 
                                    self.device, self.args.n_gmm)
@@ -45,11 +43,10 @@ class TrainerDAGMM:
 
                 loss = self.compute.forward(x, x_hat, z, gamma)
                 loss.backward(retain_graph=True)
-                #torch.nn.utils.clip_grad_norm_(self.dagmm.parameters(), 5)
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 5)
                 optimizer.step()
 
                 total_loss += loss.item()
-            scheduler.step()
             print('Training DAGMM... Epoch: {}, Loss: {:.3f}'.format(
                    epoch, total_loss/len(self.train_loader)))
                 

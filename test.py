@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import precision_recall_fscore_support as prf, accuracy_score
 
+from forward_step import ComputeLoss
+
 def eval(model, dataloaders, device, n_gmm):
     """Testing the DAGMM model"""
     dataloader_train, dataloader_test = dataloaders
@@ -19,17 +21,17 @@ def eval(model, dataloaders, device, n_gmm):
         for x, _ in dataloader_train:
             x = x.float().to(device)
 
-            _, _, z, gamma = self.model(x)
+            _, _, z, gamma = model(x)
             phi_batch, mu_batch, cov_batch = compute.compute_params(z, gamma)
 
             batch_gamma_sum = torch.sum(gamma, dim=0)
             gamma_sum += batch_gamma_sum
-            mu_sum += mu * batch_gamma_sum.unsqueeze(-1)
-            cov_sum += cov * batch_gamma_sum.unsqueeze(-1).unsqueeze(-1)
+            mu_sum += mu_batch * batch_gamma_sum.unsqueeze(-1)
+            cov_sum += cov_batch * batch_gamma_sum.unsqueeze(-1).unsqueeze(-1)
             
             N_samples += x.size(0)
             
-        train_phi = gamma_sum / N
+        train_phi = gamma_sum / N_samples
         train_mu = mu_sum / gamma_sum.unsqueeze(-1)
         train_cov = cov_sum / gamma_sum.unsqueeze(-1).unsqueeze(-1)
 
@@ -39,9 +41,10 @@ def eval(model, dataloaders, device, n_gmm):
         for x, y in dataloader_train:
             x = x.float().to(device)
 
-            _, _, z, gamma = self.model(x)
-            sample_energy, cov_diag  = compute.compute_energy(z, gamma, train_phi,
-                                                              train_mu, train_cov)
+            _, _, z, gamma = model(x)
+            sample_energy, cov_diag  = compute.compute_energy(z, gamma, phi=train_phi,
+                                                              mu=train_mu, cov=train_cov, 
+                                                              sample_mean=False)
             
             energy_train.append(sample_energy.detach().cpu())
             labels_train.append(y)
@@ -54,9 +57,10 @@ def eval(model, dataloaders, device, n_gmm):
         for x, y in dataloader_test:
             x = x.float().to(device)
 
-            _, _, z, gamma = self.model(x)
+            _, _, z, gamma = model(x)
             sample_energy, cov_diag  = compute.compute_energy(z, gamma, train_phi,
-                                                              train_mu, train_cov)
+                                                              train_mu, train_cov,
+                                                              sample_mean=False)
             
             energy_test.append(sample_energy.detach().cpu())
             labels_test.append(y)
@@ -70,6 +74,6 @@ def eval(model, dataloaders, device, n_gmm):
     pred = (energy_test > threshold).astype(int)
     gt = labels_test.astype(int)
     precision, recall, f_score, _ = prf(gt, pred, average='binary')
-    print("Accuracy : {:0.4f}, Precision : {:0.4f}, Recall : {:0.4f}, F-score : {:0.4f}".format(accuracy, precision, recall, f_score))
+    print("Precision : {:0.4f}, Recall : {:0.4f}, F-score : {:0.4f}".format(precision, recall, f_score))
     print('ROC AUC score: {:.3f}'.format(roc_auc_score(labels_total, scores_total)))
     return labels_total, scores_total

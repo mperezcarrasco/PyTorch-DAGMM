@@ -2,12 +2,14 @@ import torch
 import numpy as np
 from torchvision import datasets
 from torch.utils.data import DataLoader
+import pickle as pl
+
 
 
 class KDDCupData:
     def __init__(self, data_dir, mode):
         """Loading the data for train and test."""
-        data = np.load(data_dir)
+        data = np.load(data_dir, allow_pickle=True)
 
         labels = data["kdd"][:,-1]
         features = data["kdd"][:,:-1]
