@@ -5,7 +5,7 @@ This is my Minimal PyTorch implementation for [Deep Autoencoding Gaussian Mixtur
 # Results
 Our implementation achieved similar results as the original implementation provided by the authors.
 
-$\textbf{KDD99Cup}$:
+**KDD99Cup**:
 |      | Precision| Recall | F1-score | 
 |:------------- |:-------------:| :-------------:| :-------------:|
 | Paper | 0.9297 | 0.9442 | 0.9369 |
