@@ -18,12 +18,14 @@ class KDDCupData:
         normal_labels = labels[labels==0]
 
         n_train = int(normal_data.shape[0]*0.5)
-        normal_data_test = normal_data[n_train:]
-        normal_labels_test = normal_labels[n_train:]
+        ixs = np.arange(normal_data.shape[0])
+        np.random.shuffle(ixs)
+        normal_data_test = normal_data[ixs[n_train:]]
+        normal_labels_test = normal_labels[ixs[n_train:]]
 
         if mode == 'train':
-            self.x = normal_data[:n_train]
-            self.y = normal_labels[:n_train]
+            self.x = normal_data[ixs[:n_train]]
+            self.y = normal_labels[ixs[:n_train]]
         elif mode == 'test':
             anomalous_data = features[labels==1]
             anomalous_labels = labels[labels==1]
