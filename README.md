@@ -3,7 +3,7 @@ This is my Minimal PyTorch implementation for [Deep Autoencoding Gaussian Mixtur
 
 
 # Results
-This implementation achieved similar results as the original paper.
+This implementation achieves similar results as the original paper.
 
 **KDD99Cup**:
 |      | Precision| Recall | F1-score | 
